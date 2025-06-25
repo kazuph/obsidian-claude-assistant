@@ -1,0 +1,10 @@
+{
+    "id": "claude-assistant",
+    "name": "Claude Assistant",
+    "version": "1.0.0",
+    "minAppVersion": "0.12.0",
+    "description": "Send note content to Claude and insert response at cursor position",
+    "author": "kazuph",
+    "authorUrl": "",
+    "isDesktopOnly": true
+}
