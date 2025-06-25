@@ -1,24 +1,51 @@
 # Claude Assistant Plugin for Obsidian
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/kazuph/obsidian-claude-assistant)
+![GitHub](https://img.shields.io/github/license/kazuph/obsidian-claude-assistant)
+![GitHub issues](https://img.shields.io/github/issues/kazuph/obsidian-claude-assistant)
+![GitHub stars](https://img.shields.io/github/stars/kazuph/obsidian-claude-assistant)
+![GitHub forks](https://img.shields.io/github/forks/kazuph/obsidian-claude-assistant)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
+![Obsidian](https://img.shields.io/badge/Obsidian-483699?style=flat&logo=obsidian&logoColor=white)
+![Claude](https://img.shields.io/badge/Claude-FF6B35?style=flat&logo=anthropic&logoColor=white)
+
 An Obsidian plugin that integrates Claude Code CLI to provide AI assistance directly within your note-taking workflow.
 
 ## Features
 
+### 🆕 v0.6.0 - Selection-Based Workflow
+- **Instant execution**: Select text and run Claude without modal dialogs
+- **Selection replacement**: Selected text becomes the question, response replaces selection
+- **Dual operation modes**: Traditional modal input OR instant selection-based execution
+
+### Core Features
 - **Ask Claude about your notes**: Send your current note content along with a question to Claude
-- **Cursor position insertion**: Claude's response is automatically inserted at your cursor position
+- **Cursor position insertion**: Claude's response is automatically inserted at your cursor position (when no selection)
+- **Selection replacement**: Replace selected text with Claude's response (when text is selected)
 - **Comprehensive logging**: Detailed logging for debugging and monitoring
 - **Progress tracking**: Verbose mode shows Claude's thinking process
 - **Debug tools**: Built-in testing and debugging capabilities
 
 ## Usage
 
+### Installation
 1. **Install the plugin** in your Obsidian vault
 2. **Configure Claude CLI path** in plugin settings (auto-detection available)
-3. **Use the command**: 
-   - Press `Cmd/Ctrl + P` and search for "Ask Claude about current note"
-   - Or use the ribbon icon
-4. **Enter your question** in the modal
-5. **Claude's response** will be inserted at your cursor position
+
+### Two Operation Modes
+
+#### 📝 Traditional Mode (No Selection)
+1. Place cursor where you want Claude's response
+2. Press `Cmd/Ctrl + P` and search for "Ask Claude about current note" (or use ribbon icon)
+3. **Enter your question** in the modal
+4. **Claude's response** will be inserted at your cursor position
+
+#### ⚡ Instant Mode (With Selection) - v0.6.0
+1. **Select text** you want Claude to process/improve
+2. Press `Cmd/Ctrl + P` and search for "Ask Claude about current note" (or use ribbon icon)  
+3. **No modal appears** - execution starts immediately
+4. **Selected text** becomes the question automatically
+5. **Selection is replaced** with Claude's response
 
 ## Requirements
 
