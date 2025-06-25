@@ -84,9 +84,85 @@ export default class ClaudeAssistantPlugin extends Plugin {
     }
 
     openQuestionModal() {
-        new QuestionModal(this.app, async (question: string) => {
-            await this.processClaudeRequest(question);
-        }).open();
+        // アクティブなエディターを取得
+        const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (!activeView) {
+            new Notice('No active markdown view found');
+            return;
+        }
+
+        const editor = activeView.editor;
+        const selectedText = editor.getSelection();
+
+        if (selectedText && selectedText.trim()) {
+            // 選択テキストがある場合：即座に実行
+            this.log(`openQuestionModal: Selected text detected (${selectedText.length} chars), executing immediately`);
+            this.log(`openQuestionModal: Selected text: "${selectedText.substring(0, 200)}..."`);
+            this.processClaudeRequestWithSelection(selectedText);
+        } else {
+            // 選択テキストがない場合：従来のモーダル表示
+            this.log('openQuestionModal: No selection found, showing modal');
+            new QuestionModal(this.app, async (question: string) => {
+                await this.processClaudeRequest(question);
+            }).open();
+        }
+    }
+
+    async processClaudeRequestWithSelection(selectedText: string) {
+        await this.log(`processClaudeRequestWithSelection started with selected text: ${selectedText.substring(0, 100)}...`);
+        
+        const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (!activeView) {
+            await this.log('ERROR: No active markdown view found');
+            new Notice('No active markdown view found');
+            return;
+        }
+
+        const activeFile = this.app.workspace.getActiveFile();
+        if (!activeFile) {
+            await this.log('ERROR: No active file found');
+            new Notice('No active file found');
+            return;
+        }
+
+        try {
+            // Loading通知を表示
+            const loadingNotice = new Notice('Asking Claude...', 0);
+            await this.log('Loading notice displayed');
+            
+            // デバッグ情報
+            await this.log(`Using Claude path: ${this.claudePath}`);
+            
+            // ノート内容を取得
+            const noteContent = await this.app.vault.read(activeFile);
+            await this.log(`Note content length: ${noteContent.length} characters`);
+            await this.log(`Note content preview: ${noteContent.substring(0, 200)}...`);
+            await this.log(`Selected text as question: "${selectedText}"`);
+            
+            // Claudeコマンドを実行（選択テキストを質問として使用）
+            await this.log('Starting Claude command execution...');
+            const result = await this.executeClaudeCommand(noteContent, selectedText);
+            await this.log(`Claude command completed. Result length: ${result.length} characters`);
+            await this.log(`Claude response preview: ${result.substring(0, 300)}...`);
+            
+            // Loading通知を削除
+            loadingNotice.hide();
+            await this.log('Loading notice hidden');
+            
+            // 選択範囲をClaude応答で置き換え
+            const editor = activeView.editor;
+            editor.replaceSelection(result);
+            await this.log('Selected text replaced with Claude response');
+            
+            new Notice(`Claude response replaced selection (${result.length} chars): ${result.substring(0, 50)}${result.length > 50 ? '...' : ''}`, 5000);
+            await this.log('processClaudeRequestWithSelection completed successfully');
+        } catch (error) {
+            await this.log(`ERROR in processClaudeRequestWithSelection: ${error.message}`);
+            await this.log(`ERROR stack: ${error.stack}`);
+            new Notice(`Error: ${error.message}`);
+            console.error('Claude Assistant Error:', error);
+            console.error('Claude Assistant: Current path was:', this.claudePath);
+        }
     }
 
     async processClaudeRequest(question: string) {

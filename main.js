@@ -87,9 +87,64 @@ var ClaudeAssistantPlugin = class extends import_obsidian.Plugin {
     }
   }
   openQuestionModal() {
-    new QuestionModal(this.app, async (question) => {
-      await this.processClaudeRequest(question);
-    }).open();
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian.MarkdownView);
+    if (!activeView) {
+      new import_obsidian.Notice("No active markdown view found");
+      return;
+    }
+    const editor = activeView.editor;
+    const selectedText = editor.getSelection();
+    if (selectedText && selectedText.trim()) {
+      this.log(`openQuestionModal: Selected text detected (${selectedText.length} chars), executing immediately`);
+      this.log(`openQuestionModal: Selected text: "${selectedText.substring(0, 200)}..."`);
+      this.processClaudeRequestWithSelection(selectedText);
+    } else {
+      this.log("openQuestionModal: No selection found, showing modal");
+      new QuestionModal(this.app, async (question) => {
+        await this.processClaudeRequest(question);
+      }).open();
+    }
+  }
+  async processClaudeRequestWithSelection(selectedText) {
+    await this.log(`processClaudeRequestWithSelection started with selected text: ${selectedText.substring(0, 100)}...`);
+    const activeView = this.app.workspace.getActiveViewOfType(import_obsidian.MarkdownView);
+    if (!activeView) {
+      await this.log("ERROR: No active markdown view found");
+      new import_obsidian.Notice("No active markdown view found");
+      return;
+    }
+    const activeFile = this.app.workspace.getActiveFile();
+    if (!activeFile) {
+      await this.log("ERROR: No active file found");
+      new import_obsidian.Notice("No active file found");
+      return;
+    }
+    try {
+      const loadingNotice = new import_obsidian.Notice("Asking Claude...", 0);
+      await this.log("Loading notice displayed");
+      await this.log(`Using Claude path: ${this.claudePath}`);
+      const noteContent = await this.app.vault.read(activeFile);
+      await this.log(`Note content length: ${noteContent.length} characters`);
+      await this.log(`Note content preview: ${noteContent.substring(0, 200)}...`);
+      await this.log(`Selected text as question: "${selectedText}"`);
+      await this.log("Starting Claude command execution...");
+      const result = await this.executeClaudeCommand(noteContent, selectedText);
+      await this.log(`Claude command completed. Result length: ${result.length} characters`);
+      await this.log(`Claude response preview: ${result.substring(0, 300)}...`);
+      loadingNotice.hide();
+      await this.log("Loading notice hidden");
+      const editor = activeView.editor;
+      editor.replaceSelection(result);
+      await this.log("Selected text replaced with Claude response");
+      new import_obsidian.Notice(`Claude response replaced selection (${result.length} chars): ${result.substring(0, 50)}${result.length > 50 ? "..." : ""}`, 5e3);
+      await this.log("processClaudeRequestWithSelection completed successfully");
+    } catch (error) {
+      await this.log(`ERROR in processClaudeRequestWithSelection: ${error.message}`);
+      await this.log(`ERROR stack: ${error.stack}`);
+      new import_obsidian.Notice(`Error: ${error.message}`);
+      console.error("Claude Assistant Error:", error);
+      console.error("Claude Assistant: Current path was:", this.claudePath);
+    }
   }
   async processClaudeRequest(question) {
     await this.log(`processClaudeRequest started with question: ${question.substring(0, 100)}...`);
