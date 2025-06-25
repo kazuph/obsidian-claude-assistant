@@ -1,10 +1,8 @@
 # Claude Assistant Plugin for Obsidian
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/kazuph/obsidian-claude-assistant)
-![GitHub](https://img.shields.io/github/license/kazuph/obsidian-claude-assistant)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![GitHub issues](https://img.shields.io/github/issues/kazuph/obsidian-claude-assistant)
-![GitHub stars](https://img.shields.io/github/stars/kazuph/obsidian-claude-assistant)
-![GitHub forks](https://img.shields.io/github/forks/kazuph/obsidian-claude-assistant)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
 ![Obsidian](https://img.shields.io/badge/Obsidian-483699?style=flat&logo=obsidian&logoColor=white)
 ![Claude](https://img.shields.io/badge/Claude-FF6B35?style=flat&logo=anthropic&logoColor=white)
